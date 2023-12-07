@@ -15,7 +15,7 @@ public class SslEnabledMssqlSourceAcceptanceTest extends MssqlSourceAcceptanceTe
   @Override
   protected JsonNode getConfig() {
     return testdb.integrationTestConfigBuilder()
-        .withSsl(Map.of("ssl_method", "encrypted_trust_server_certificate"))
+        .withEncrytedTrustServerCertificate()
         .build();
   }
 

@@ -61,7 +61,7 @@ public class CloudDeploymentMssqlTest {
   void testStrictSSLSecuredNoTunnel() throws Exception {
     try (final var testdb = createTestDatabase()) {
       final var config = testdb.testConfigBuilder()
-          .withSsl(Map.of("ssl_method", "encrypted_trust_server_certificate"))
+          .withEncrytedTrustServerCertificate()
           .with("tunnel_method", ImmutableMap.builder().put("tunnel_method", "NO_TUNNEL").build())
           .build();
       final AirbyteConnectionStatus actual = source().check(config);
@@ -77,7 +77,7 @@ public class CloudDeploymentMssqlTest {
           .withDatabase()
           .with(JdbcUtils.USERNAME_KEY, testdb.getUserName())
           .with(JdbcUtils.PASSWORD_KEY, "fake")
-          .withSsl(Map.of("ssl_method", "encrypted_trust_server_certificate"))
+          .withEncrytedTrustServerCertificate()
           .with("tunnel_method", ImmutableMap.builder().put("tunnel_method", "SSH_KEY_AUTH").build())
           .build();
       final AirbyteConnectionStatus actual = source().check(config);
@@ -94,7 +94,7 @@ public class CloudDeploymentMssqlTest {
           .withDatabase()
           .with(JdbcUtils.USERNAME_KEY, testdb.getUserName())
           .with(JdbcUtils.PASSWORD_KEY, "fake")
-          .withSsl(Map.of("ssl_method", "encrypted_trust_server_certificate"))
+          .withEncrytedTrustServerCertificate()
           .with("tunnel_method", ImmutableMap.builder().put("tunnel_method", "SSH_KEY_AUTH").build())
           .build();
       final AirbyteConnectionStatus actual = source().check(config);
