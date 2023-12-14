@@ -16,7 +16,8 @@ from airbyte_cdk.sources.connector_state_manager import ConnectorStateManager
 from airbyte_cdk.sources.message import InMemoryMessageRepository
 from airbyte_cdk.sources.streams import Stream
 from airbyte_cdk.sources.streams.concurrent.adapters import StreamFacade
-from airbyte_cdk.sources.streams.concurrent.cursor import NoopCursor
+from airbyte_cdk.sources.streams.concurrent.cursor import ConcurrentCursor, CursorField, NoopCursor
+from airbyte_cdk.sources.streams.concurrent.state_converter import IsoMillisConcurrentStreamStateConverter
 from airbyte_cdk.sources.streams.http.auth import TokenAuthenticator
 from airbyte_cdk.sources.utils.schema_helpers import InternalConfig
 from airbyte_cdk.utils.traced_exception import AirbyteTracedException
@@ -50,7 +51,7 @@ class SourceSalesforce(ConcurrentSourceAdapter):
 
     message_repository = InMemoryMessageRepository(Level(AirbyteLogFormatter.level_mapping[logger.level]))
 
-    def __init__(self, catalog: Optional[ConfiguredAirbyteCatalog], config: Optional[Mapping[str, Any]], **kwargs):
+    def __init__(self, catalog: Optional[ConfiguredAirbyteCatalog], config: Optional[Mapping[str, Any]], state: AirbyteStateMessage, **kwargs):
         if config:
             concurrency_level = min(config.get("num_workers", _DEFAULT_CONCURRENCY), _MAX_CONCURRENCY)
         else:
@@ -61,6 +62,7 @@ class SourceSalesforce(ConcurrentSourceAdapter):
         )
         super().__init__(concurrent_source)
         self.catalog = catalog
+        self.state = state
 
     @staticmethod
     def _get_sf_object(config: Mapping[str, Any]) -> Salesforce:
@@ -192,15 +194,36 @@ class SourceSalesforce(ConcurrentSourceAdapter):
         stream_objects = sf.get_validated_streams(config=config, catalog=self.catalog)
         streams = self.generate_streams(config, stream_objects, sf)
         streams.append(Describe(sf_api=sf, catalog=self.catalog))
-        # TODO: incorporate state & ConcurrentCursor when we support incremental
+        state_manager = ConnectorStateManager(stream_instance_map={s.name: s for s in streams}, state=self.state)
+
         configured_streams = []
+
         for stream in streams:
             sync_mode = self._get_sync_mode_from_catalog(stream)
             if sync_mode == SyncMode.full_refresh:
-                configured_streams.append(StreamFacade.create_from_stream(stream, self, logger, None, NoopCursor()))
+                cursor = NoopCursor()
+                state = None
             else:
-                configured_streams.append(stream)
+                state_converter = IsoMillisConcurrentStreamStateConverter(stream.cursor_field, self.DATETIME_FORMAT)
+                state = state_converter.get_concurrent_stream_state(
+                    state_manager.get_stream_state(stream.name, stream.namespace)
+                )
+                cursor = ConcurrentCursor(
+                    stream.name,
+                    stream.namespace,
+                    state,
+                    self.message_repository,
+                    state_manager,
+                    state_converter,
+                    CursorField(stream.cursor_field),
+                    self._get_slice_boundary_fields(stream, state_manager),
+                )
+
+            configured_streams.append(StreamFacade.create_from_stream(stream, self, logger, state, cursor))
         return configured_streams
+
+    def _get_slice_boundary_fields(self, stream: Stream, state_manager: ConnectorStateManager) -> Optional[Tuple[str, str]]:
+        return ("start_date", "end_date")
 
     def _get_sync_mode_from_catalog(self, stream: Stream) -> Optional[SyncMode]:
         if self.catalog:
