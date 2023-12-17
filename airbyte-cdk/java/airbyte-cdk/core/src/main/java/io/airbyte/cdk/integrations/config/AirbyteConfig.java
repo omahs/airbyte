@@ -2,10 +2,8 @@ package io.airbyte.cdk.integrations.config;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.airbyte.commons.io.IOs;
 import io.airbyte.commons.json.Jsons;
 import io.airbyte.validation.json.JsonSchemaValidator;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -28,6 +26,8 @@ public abstract class AirbyteConfig<CONFIG_TYPE extends AirbyteConfig> {
       Jsons.replaceNestedInt(jsonConfig, keys, replacement);
     }
   }
+
+
   protected final JsonNode jsonConfig;
 
   protected AirbyteConfig(JsonNode jsonConfig) {
@@ -56,13 +56,6 @@ public abstract class AirbyteConfig<CONFIG_TYPE extends AirbyteConfig> {
     return Jsons.getOptional(jsonConfig, keys);
   }
 
-  public final JsonNode get(String key) {
-    return jsonConfig.get(key);
-  }
-  public final boolean has(String key) {
-    return jsonConfig.has(key);
-  }
-
   public final Set<String> validateWith(JsonSchemaValidator validator, JsonNode schemaJson) {
     return validator.validate(schemaJson, this.jsonConfig);
   }
@@ -71,5 +64,12 @@ public abstract class AirbyteConfig<CONFIG_TYPE extends AirbyteConfig> {
   @Override
   public String toString() {
     return jsonConfig.toString();
+  }
+
+  public final boolean has(AirbyteConfigKey key) {
+    return jsonConfig.has(key.jsonName);
+  }
+  public final JsonNode get(AirbyteConfigKey key) {
+    return jsonConfig.get(key.jsonName);
   }
 }

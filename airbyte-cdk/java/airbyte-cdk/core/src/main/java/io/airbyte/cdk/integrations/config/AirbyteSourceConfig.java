@@ -29,6 +29,14 @@ public class AirbyteSourceConfig extends AirbyteConfig<AirbyteSourceConfig> {
     }
   }
 
+  public static enum AirbyteSourceConfigKey {
+    ;
+    private final String jsonName;
+    private AirbyteSourceConfigKey(String jsonName) {
+      this.jsonName = jsonName;
+    }
+  }
+
   private AirbyteSourceConfig(JsonNode jsonConfig) {
     super(jsonConfig);
   }
@@ -67,5 +75,12 @@ public class AirbyteSourceConfig extends AirbyteConfig<AirbyteSourceConfig> {
 
   public static AirbyteSourceConfig fromNothing() {
     return new AirbyteSourceConfig(Jsons.jsonNode(Collections.emptyMap()));
+  }
+
+  public final boolean has(String key) {
+    return jsonConfig.has(key);
+  }
+  public final JsonNode get(String key) {
+    return jsonConfig.get(key);
   }
 }

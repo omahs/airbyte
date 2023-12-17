@@ -4,7 +4,6 @@
 
 package io.airbyte.cdk.integrations.debezium.internals;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.AbstractIterator;
 import io.airbyte.cdk.integrations.config.AirbyteSourceConfig;
 import io.airbyte.cdk.integrations.debezium.CdcMetadataInjector;
