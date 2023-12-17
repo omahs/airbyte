@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.airbyte.commons.json.Jsons;
 import io.airbyte.validation.json.JsonSchemaValidator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -26,7 +27,10 @@ public abstract class AirbyteConfig<CONFIG_TYPE extends AirbyteConfig> {
       Jsons.replaceNestedInt(jsonConfig, keys, replacement);
     }
   }
-
+  private static final ConfigField<AirbyteConfig, Map<String, String>> JDBC_URL_PARAMS_FIELD =
+      new StringToStringMapConfigField<>("jdbc_url_params");
+  private static final ConfigField<AirbyteConfig, Map<String, String>> CONNECTION_PROPERTIES_FIELD =
+      new StringToStringMapConfigField<>("connection_properties");
 
   protected final JsonNode jsonConfig;
 
@@ -66,10 +70,18 @@ public abstract class AirbyteConfig<CONFIG_TYPE extends AirbyteConfig> {
     return jsonConfig.toString();
   }
 
-  public final boolean has(AirbyteConfigKey key) {
-    return jsonConfig.has(key.jsonName);
+  final boolean has(ConfigField<AirbyteConfig, ?> key) {
+    return jsonConfig.has(key.fieldName);
   }
-  public final JsonNode get(AirbyteConfigKey key) {
-    return jsonConfig.get(key.jsonName);
+  final JsonNode get(ConfigField<AirbyteConfig, ?> key) {
+    return jsonConfig.get(key.fieldName);
+  }
+
+  public Map<String, String> getJdbcUrlParams() {
+    return JDBC_URL_PARAMS_FIELD.convert(this);
+  }
+
+  public Map<String, String> getConnectionProperties() {
+    return CONNECTION_PROPERTIES_FIELD.convert(this);
   }
 }

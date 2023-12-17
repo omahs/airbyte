@@ -9,13 +9,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
+import io.airbyte.cdk.integrations.config.AirbyteConfigKey;
+import io.airbyte.cdk.integrations.config.AirbyteSourceConfig;
 import io.airbyte.cdk.db.factory.DatabaseDriver;
 import io.airbyte.cdk.db.jdbc.JdbcUtils;
 import io.airbyte.cdk.db.jdbc.streaming.AdaptiveStreamingQueryConfig;
-import io.airbyte.cdk.integrations.base.IntegrationRunner;
 import io.airbyte.cdk.integrations.base.Source;
 import io.airbyte.cdk.integrations.base.SourceRunner;
-import io.airbyte.cdk.integrations.config.AirbyteSourceConfig;
 import io.airbyte.cdk.integrations.source.jdbc.test.JdbcSourceAcceptanceTest;
 import io.airbyte.cdk.integrations.util.HostPortResolver;
 import io.airbyte.cdk.testutils.TestDatabase;
@@ -200,7 +200,7 @@ class DefaultJdbcSourceAcceptanceTest
   void testCustomParametersOverwriteDefaultParametersExpectException() {
     final String connectionPropertiesUrl = "ssl=false";
     final AirbyteSourceConfig config = getConfigWithConnectionProperties(PSQL_CONTAINER, testdb.getDatabaseName(), connectionPropertiesUrl);
-    final Map<String, String> customParameters = JdbcUtils.parseJdbcParameters(config, JdbcUtils.CONNECTION_PROPERTIES_KEY, "&");
+    final Map<String, String> customParameters = config.getConnectionProperties();
     final Map<String, String> defaultParameters = Map.of(
         "ssl", "true",
         "sslmode", "require");
