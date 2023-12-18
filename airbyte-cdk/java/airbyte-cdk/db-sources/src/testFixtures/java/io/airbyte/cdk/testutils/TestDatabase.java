@@ -13,6 +13,7 @@ import io.airbyte.cdk.db.factory.DataSourceFactory;
 import io.airbyte.cdk.db.factory.DatabaseDriver;
 import io.airbyte.cdk.db.jdbc.JdbcUtils;
 import io.airbyte.cdk.integrations.JdbcConnector;
+import io.airbyte.cdk.integrations.config.AirbyteSourceConfig;
 import io.airbyte.cdk.integrations.util.HostPortResolver;
 import io.airbyte.commons.json.Jsons;
 import io.airbyte.commons.string.Strings;
@@ -245,8 +246,8 @@ abstract public class TestDatabase<C extends JdbcDatabaseContainer<?>, T extends
       this.testDatabase = testDatabase;
     }
 
-    public JsonNode build() {
-      return Jsons.jsonNode(builder.build());
+    public AirbyteSourceConfig build() {
+      return AirbyteSourceConfig.fromJsonNode(Jsons.jsonNode(builder.build()));
     }
 
     @SuppressWarnings("unchecked")

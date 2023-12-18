@@ -145,9 +145,9 @@ public class ParquetSerializedBufferTest {
   }
 
   private static void runTest(final Long minExpectedByte,
-                              final Long maxExpectedByte,
-                              final S3DestinationConfig config,
-                              final String expectedData)
+      final Long maxExpectedByte,
+      final S3DestinationConfig config,
+      final String expectedData)
       throws Exception {
     final File tempFile = Files.createTempFile(UUID.randomUUID().toString(), ".parquet").toFile();
     try (final SerializableBuffer writer = ParquetSerializedBuffer.createFunction(config).apply(streamPair, catalog)) {

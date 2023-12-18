@@ -2,13 +2,17 @@ package io.airbyte.cdk.integrations.base;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.annotations.VisibleForTesting;
+import io.airbyte.commons.io.IOs;
+import io.airbyte.commons.json.Jsons;
 import io.airbyte.protocol.models.v0.AirbyteMessage;
 import io.airbyte.protocol.models.v0.ConfiguredAirbyteCatalog;
 import io.airbyte.validation.json.JsonSchemaValidator;
+import java.nio.file.Path;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-public class DestinationRunner extends IntegrationRunner {
+public class DestinationRunner extends IntegrationRunner<JsonNode> {
   private final Destination destination;
   public DestinationRunner(final Destination destination) {
     super(new IntegrationCliParser(), Destination::defaultOutputRecordCollector);
@@ -70,5 +74,19 @@ public class DestinationRunner extends IntegrationRunner {
           EXIT_THREAD_DELAY_MINUTES,
           TimeUnit.MINUTES);
     }
+  }
+
+  @Override
+  protected Set<String> validateConfig(final JsonNode schemaJson, final JsonNode configJson) {
+    return validator.validate(schemaJson, configJson);
+  }
+
+  public static JsonNode parseConfig(final Path path) {
+    return Jsons.deserialize(IOs.readFile(path));
+  }
+
+  protected <T> T parseConfig(final Path path, final Class<T> klass) {
+    final JsonNode jsonNode = parseConfig(path);
+    return Jsons.object(jsonNode, klass);
   }
 }

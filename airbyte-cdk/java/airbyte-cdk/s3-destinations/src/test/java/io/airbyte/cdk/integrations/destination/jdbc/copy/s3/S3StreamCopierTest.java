@@ -48,9 +48,9 @@ public class S3StreamCopierTest {
   private static final Logger LOGGER = LoggerFactory.getLogger(S3StreamCopierTest.class);
 
   private static final S3DestinationConfig S3_CONFIG = S3DestinationConfig.create(
-      "fake-bucket",
-      "fake-bucketPath",
-      "fake-region")
+          "fake-bucket",
+          "fake-bucketPath",
+          "fake-region")
       .withEndpoint("fake-endpoint")
       .withAccessKeyCredential("fake-access-key-id", "fake-secret-access-key")
       .get();
@@ -145,11 +145,11 @@ public class S3StreamCopierTest {
 
       @Override
       public void copyS3CsvFileIntoTable(
-                                         final JdbcDatabase database,
-                                         final String s3FileLocation,
-                                         final String schema,
-                                         final String tableName,
-                                         final S3DestinationConfig s3Config) {
+          final JdbcDatabase database,
+          final String s3FileLocation,
+          final String schema,
+          final String tableName,
+          final S3DestinationConfig s3Config) {
         copyArguments.add(new CopyArguments(database, s3FileLocation, schema, tableName, s3Config));
       }
 
@@ -246,11 +246,11 @@ public class S3StreamCopierTest {
 
       @Override
       public void copyS3CsvFileIntoTable(
-                                         final JdbcDatabase database,
-                                         final String s3FileLocation,
-                                         final String schema,
-                                         final String tableName,
-                                         final S3DestinationConfig s3Config) {
+          final JdbcDatabase database,
+          final String s3FileLocation,
+          final String schema,
+          final String tableName,
+          final S3DestinationConfig s3Config) {
         copyArguments.add(new CopyArguments(database, s3FileLocation, schema, tableName, s3Config));
       }
 

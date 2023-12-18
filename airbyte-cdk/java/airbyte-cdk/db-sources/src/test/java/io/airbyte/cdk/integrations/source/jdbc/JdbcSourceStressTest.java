@@ -12,6 +12,7 @@ import io.airbyte.cdk.db.jdbc.streaming.AdaptiveStreamingQueryConfig;
 import io.airbyte.cdk.integrations.base.IntegrationRunner;
 import io.airbyte.cdk.integrations.base.Source;
 import io.airbyte.cdk.integrations.base.SourceRunner;
+import io.airbyte.cdk.integrations.config.AirbyteSourceConfig;
 import io.airbyte.cdk.integrations.source.jdbc.test.JdbcStressTest;
 import io.airbyte.cdk.testutils.PostgreSQLContainerHelper;
 import io.airbyte.commons.io.IOs;
@@ -39,7 +40,7 @@ class JdbcSourceStressTest extends JdbcStressTest {
 
   private static PostgreSQLContainer<?> PSQL_DB;
 
-  private JsonNode config;
+  private AirbyteSourceConfig config;
 
   @BeforeAll
   static void init() {
@@ -51,13 +52,13 @@ class JdbcSourceStressTest extends JdbcStressTest {
   public void setup() throws Exception {
     final String schemaName = Strings.addRandomSuffix("db", "_", 10);;
 
-    config = Jsons.jsonNode(ImmutableMap.builder()
+    config = AirbyteSourceConfig.fromJsonNode(Jsons.jsonNode(ImmutableMap.builder()
         .put(JdbcUtils.HOST_KEY, PSQL_DB.getHost())
         .put(JdbcUtils.PORT_KEY, PSQL_DB.getFirstMappedPort())
         .put(JdbcUtils.DATABASE_KEY, schemaName)
         .put(JdbcUtils.USERNAME_KEY, PSQL_DB.getUsername())
         .put(JdbcUtils.PASSWORD_KEY, PSQL_DB.getPassword())
-        .build());
+        .build()));
 
     final String initScriptName = "init_" + schemaName.concat(".sql");
     final String tmpFilePath = IOs.writeFileToRandomTmpDir(initScriptName, "CREATE DATABASE " + schemaName + ";");
@@ -77,7 +78,7 @@ class JdbcSourceStressTest extends JdbcStressTest {
   }
 
   @Override
-  public JsonNode getConfig() {
+  public AirbyteSourceConfig getConfig() {
     return config;
   }
 
@@ -102,7 +103,7 @@ class JdbcSourceStressTest extends JdbcStressTest {
     }
 
     @Override
-    public JsonNode toDatabaseConfig(final JsonNode config) {
+    public JsonNode toDatabaseConfig(final AirbyteSourceConfig config) {
       final ImmutableMap.Builder<Object, Object> configBuilder = ImmutableMap.builder()
           .put(JdbcUtils.USERNAME_KEY, config.get(JdbcUtils.USERNAME_KEY).asText())
           .put(JdbcUtils.JDBC_URL_KEY, String.format(DatabaseDriver.POSTGRESQL.getUrlFormatString(),

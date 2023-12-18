@@ -36,8 +36,8 @@ public class SshWrappedDestination implements Destination {
   private final String endPointKey;
 
   public SshWrappedDestination(final Destination delegate,
-                               final List<String> hostKey,
-                               final List<String> portKey) {
+      final List<String> hostKey,
+      final List<String> portKey) {
     this.delegate = delegate;
     this.hostKey = hostKey;
     this.portKey = portKey;
@@ -45,7 +45,7 @@ public class SshWrappedDestination implements Destination {
   }
 
   public SshWrappedDestination(final Destination delegate,
-                               final String endPointKey) {
+      final String endPointKey) {
     this.delegate = delegate;
     this.endPointKey = endPointKey;
     this.portKey = null;
@@ -64,8 +64,8 @@ public class SshWrappedDestination implements Destination {
   @Override
   public AirbyteConnectionStatus check(final JsonNode config) throws Exception {
     try {
-      return (endPointKey != null) ? SshTunnel.sshWrap(config, endPointKey, delegate::check)
-          : SshTunnel.sshWrap(config, hostKey, portKey, delegate::check);
+      return (endPointKey != null) ? SshTunnelForDestination.sshWrap(config, endPointKey, delegate::check)
+          : SshTunnelForDestination.sshWrap(config, hostKey, portKey, delegate::check);
     } catch (final RuntimeException e) {
       final String sshErrorMessage = "Could not connect with provided SSH configuration. Error: " + e.getMessage();
       AirbyteTraceMessageUtility.emitConfigErrorTrace(e, sshErrorMessage);
@@ -77,10 +77,10 @@ public class SshWrappedDestination implements Destination {
 
   @Override
   public AirbyteMessageConsumer getConsumer(final JsonNode config,
-                                            final ConfiguredAirbyteCatalog catalog,
-                                            final Consumer<AirbyteMessage> outputRecordCollector)
+      final ConfiguredAirbyteCatalog catalog,
+      final Consumer<AirbyteMessage> outputRecordCollector)
       throws Exception {
-    final SshTunnel tunnel = getTunnelInstance(config);
+    final SshTunnelForDestination tunnel = getTunnelInstance(config);
 
     final AirbyteMessageConsumer delegateConsumer;
     try {
@@ -95,10 +95,10 @@ public class SshWrappedDestination implements Destination {
 
   @Override
   public SerializedAirbyteMessageConsumer getSerializedMessageConsumer(final JsonNode config,
-                                                                       final ConfiguredAirbyteCatalog catalog,
-                                                                       final Consumer<AirbyteMessage> outputRecordCollector)
+      final ConfiguredAirbyteCatalog catalog,
+      final Consumer<AirbyteMessage> outputRecordCollector)
       throws Exception {
-    final SshTunnel tunnel = getTunnelInstance(config);
+    final SshTunnelForDestination tunnel = getTunnelInstance(config);
     final SerializedAirbyteMessageConsumer delegateConsumer;
     try {
       delegateConsumer = delegate.getSerializedMessageConsumer(tunnel.getConfigInTunnel(), catalog, outputRecordCollector);
@@ -110,10 +110,10 @@ public class SshWrappedDestination implements Destination {
     return SerializedAirbyteMessageConsumer.appendOnClose(delegateConsumer, tunnel::close);
   }
 
-  protected SshTunnel getTunnelInstance(final JsonNode config) throws Exception {
+  protected SshTunnelForDestination getTunnelInstance(final JsonNode config) throws Exception {
     return (endPointKey != null)
-        ? SshTunnel.getInstance(config, endPointKey)
-        : SshTunnel.getInstance(config, hostKey, portKey);
+        ? SshTunnelForDestination.getInstance(config, endPointKey)
+        : SshTunnelForDestination.getInstance(config, hostKey, portKey);
   }
 
 }

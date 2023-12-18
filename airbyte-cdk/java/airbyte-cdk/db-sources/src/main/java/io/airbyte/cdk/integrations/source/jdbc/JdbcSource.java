@@ -11,6 +11,7 @@ import io.airbyte.cdk.db.jdbc.streaming.AdaptiveStreamingQueryConfig;
 import io.airbyte.cdk.integrations.base.IntegrationRunner;
 import io.airbyte.cdk.integrations.base.Source;
 import io.airbyte.cdk.integrations.base.SourceRunner;
+import io.airbyte.cdk.integrations.config.AirbyteSourceConfig;
 import java.sql.JDBCType;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -26,8 +27,8 @@ public class JdbcSource extends AbstractJdbcSource<JDBCType> implements Source {
 
   // no-op for JdbcSource since the config it receives is designed to be use for JDBC.
   @Override
-  public JsonNode toDatabaseConfig(final JsonNode config) {
-    return config;
+  public JsonNode toDatabaseConfig(final AirbyteSourceConfig config) {
+    return config.asJsonNode();
   }
 
   @Override

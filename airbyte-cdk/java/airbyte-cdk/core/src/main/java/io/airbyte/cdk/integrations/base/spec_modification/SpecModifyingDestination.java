@@ -36,16 +36,16 @@ public abstract class SpecModifyingDestination implements Destination {
 
   @Override
   public AirbyteMessageConsumer getConsumer(final JsonNode config,
-                                            final ConfiguredAirbyteCatalog catalog,
-                                            final Consumer<AirbyteMessage> outputRecordCollector)
+      final ConfiguredAirbyteCatalog catalog,
+      final Consumer<AirbyteMessage> outputRecordCollector)
       throws Exception {
     return destination.getConsumer(config, catalog, outputRecordCollector);
   }
 
   @Override
   public SerializedAirbyteMessageConsumer getSerializedMessageConsumer(final JsonNode config,
-                                                                       final ConfiguredAirbyteCatalog catalog,
-                                                                       final Consumer<AirbyteMessage> outputRecordCollector)
+      final ConfiguredAirbyteCatalog catalog,
+      final Consumer<AirbyteMessage> outputRecordCollector)
       throws Exception {
     return destination.getSerializedMessageConsumer(config, catalog, outputRecordCollector);
   }

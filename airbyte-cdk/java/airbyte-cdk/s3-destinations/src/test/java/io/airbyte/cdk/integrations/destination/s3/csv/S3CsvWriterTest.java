@@ -58,9 +58,9 @@ class S3CsvWriterTest {
   private static final S3CsvFormatConfig CSV_FORMAT_CONFIG = new S3CsvFormatConfig(Flattening.NO, CompressionType.NO_COMPRESSION);
 
   private static final S3DestinationConfig CONFIG = S3DestinationConfig.create(
-      "fake-bucket",
-      "fake-bucketPath",
-      "fake-region")
+          "fake-bucket",
+          "fake-bucketPath",
+          "fake-region")
       .withEndpoint("fake-endpoint")
       .withAccessKeyCredential("fake-access-key-id", "fake-secret-access-key")
       .withFormatConfig(CSV_FORMAT_CONFIG)
@@ -137,7 +137,7 @@ class S3CsvWriterTest {
         s3Client,
         CONFIGURED_STREAM,
         UPLOAD_TIME).uploadThreads(UPLOAD_THREADS)
-            .queueCapacity(QUEUE_CAPACITY);
+        .queueCapacity(QUEUE_CAPACITY);
   }
 
   @AfterEach
@@ -250,9 +250,9 @@ class S3CsvWriterTest {
   public void writesContentsCorrectly_when_stagingDatabaseConfig() throws IOException {
     DestinationConfig.initialize(Jsons.emptyObject());
     final S3DestinationConfig s3Config = S3DestinationConfig.create(
-        "fake-bucket",
-        "fake-bucketPath",
-        "fake-region")
+            "fake-bucket",
+            "fake-bucketPath",
+            "fake-region")
         .withEndpoint("fake-endpoint")
         .withAccessKeyCredential("fake-access-key-id", "fake-secret-access-key")
         .withFormatConfig(CSV_FORMAT_CONFIG)
@@ -262,11 +262,11 @@ class S3CsvWriterTest {
         s3Client,
         CONFIGURED_STREAM,
         UPLOAD_TIME).uploadThreads(UPLOAD_THREADS)
-            .queueCapacity(QUEUE_CAPACITY)
-            .withHeader(false)
-            .csvSettings(CSVFormat.DEFAULT)
-            .csvSheetGenerator(new StagingDatabaseCsvSheetGenerator())
-            .build();
+        .queueCapacity(QUEUE_CAPACITY)
+        .withHeader(false)
+        .csvSettings(CSVFormat.DEFAULT)
+        .csvSheetGenerator(new StagingDatabaseCsvSheetGenerator())
+        .build();
 
     writer.write(
         UUID.fromString("f6767f7d-ce1e-45cc-92db-2ad3dfdd088e"),

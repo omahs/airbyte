@@ -70,8 +70,8 @@ public class AdaptiveDestinationRunner {
     private final Supplier<CT> cloudDestinationSupplier;
 
     public Runner(final String deploymentMode,
-                  final Supplier<OT> ossDestinationSupplier,
-                  final Supplier<CT> cloudDestinationSupplier) {
+        final Supplier<OT> ossDestinationSupplier,
+        final Supplier<CT> cloudDestinationSupplier) {
       this.deploymentMode = deploymentMode;
       this.ossDestinationSupplier = ossDestinationSupplier;
       this.cloudDestinationSupplier = cloudDestinationSupplier;
@@ -93,7 +93,7 @@ public class AdaptiveDestinationRunner {
       // Parse the CLI args just so we can accomplish that.
       IntegrationConfig parsedArgs = new IntegrationCliParser().parse(args);
       if (parsedArgs.getCommand() != Command.SPEC) {
-        DestinationConfig.initialize(IntegrationRunner.parseConfig(parsedArgs.getConfigPath()));
+        DestinationConfig.initialize(DestinationRunner.parseConfig(parsedArgs.getConfigPath()));
       } else {
         DestinationConfig.initialize(Jsons.emptyObject());
       }

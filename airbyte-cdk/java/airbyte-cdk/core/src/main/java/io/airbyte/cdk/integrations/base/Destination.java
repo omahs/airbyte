@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
 
-public interface Destination extends Integration {
+public interface Destination extends Integration<JsonNode> {
 
   /**
    * Return a consumer that writes messages to the destination.
@@ -31,8 +31,8 @@ public interface Destination extends Integration {
    * @throws Exception - any exception.
    */
   AirbyteMessageConsumer getConsumer(JsonNode config,
-                                     ConfiguredAirbyteCatalog catalog,
-                                     Consumer<AirbyteMessage> outputRecordCollector)
+      ConfiguredAirbyteCatalog catalog,
+      Consumer<AirbyteMessage> outputRecordCollector)
       throws Exception;
 
   /**
@@ -48,8 +48,8 @@ public interface Destination extends Integration {
    * @throws Exception exception
    */
   default SerializedAirbyteMessageConsumer getSerializedMessageConsumer(final JsonNode config,
-                                                                        final ConfiguredAirbyteCatalog catalog,
-                                                                        final Consumer<AirbyteMessage> outputRecordCollector)
+      final ConfiguredAirbyteCatalog catalog,
+      final Consumer<AirbyteMessage> outputRecordCollector)
       throws Exception {
     return new ShimToSerializedAirbyteMessageConsumer(getConsumer(config, catalog, outputRecordCollector));
   }

@@ -105,12 +105,12 @@ public class CsvSerializedBufferTest {
   }
 
   private static void runTest(final BufferStorage buffer,
-                              final CSVFormat csvFormat,
-                              final boolean withCompression,
-                              final Long minExpectedByte,
-                              final Long maxExpectedByte,
-                              final S3CsvFormatConfig config,
-                              final String expectedData)
+      final CSVFormat csvFormat,
+      final boolean withCompression,
+      final Long minExpectedByte,
+      final Long maxExpectedByte,
+      final S3CsvFormatConfig config,
+      final String expectedData)
       throws Exception {
     final File outputFile = buffer.getFile();
     try (final CsvSerializedBuffer writer = (CsvSerializedBuffer) CsvSerializedBuffer

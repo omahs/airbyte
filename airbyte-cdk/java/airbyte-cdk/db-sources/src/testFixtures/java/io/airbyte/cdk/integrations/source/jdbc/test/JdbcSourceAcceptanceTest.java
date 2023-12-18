@@ -19,6 +19,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.airbyte.cdk.db.factory.DatabaseDriver;
 import io.airbyte.cdk.db.jdbc.JdbcUtils;
 import io.airbyte.cdk.integrations.base.Source;
+import io.airbyte.cdk.integrations.config.AirbyteSourceConfig;
+import io.airbyte.cdk.integrations.config.AirbyteSourceConfig.SourceConfigBuilder;
 import io.airbyte.cdk.integrations.source.relationaldb.RelationalDbQueryUtils;
 import io.airbyte.cdk.integrations.source.relationaldb.models.DbState;
 import io.airbyte.cdk.integrations.source.relationaldb.models.DbStreamState;
@@ -119,7 +121,7 @@ abstract public class JdbcSourceAcceptanceTest<S extends Source, T extends TestD
    *
    * @return config
    */
-  abstract protected JsonNode config();
+  abstract protected AirbyteSourceConfig config();
 
   /**
    * An instance of the source that should be tests.
@@ -196,7 +198,8 @@ abstract public class JdbcSourceAcceptanceTest<S extends Source, T extends TestD
             getFullyQualifiedTableName(TABLE_NAME_COMPOSITE_PK));
   }
 
-  protected void maybeSetShorterConnectionTimeout(final JsonNode config) {
+  protected SourceConfigBuilder maybeSetShorterConnectionTimeout(final SourceConfigBuilder configBuilder) {
+    return configBuilder;
     // Optionally implement this to speed up test cases which will result in a connection timeout.
   }
 
@@ -223,9 +226,7 @@ abstract public class JdbcSourceAcceptanceTest<S extends Source, T extends TestD
 
   @Test
   void testCheckFailure() throws Exception {
-    final var config = config();
-    maybeSetShorterConnectionTimeout(config);
-    ((ObjectNode) config).put(JdbcUtils.PASSWORD_KEY, "fake");
+    var config = maybeSetShorterConnectionTimeout(config().cloneBuilder()).with(JdbcUtils.PASSWORD_KEY, "fake").build();
     final AirbyteConnectionStatus actual = source().check(config);
     assertEquals(Status.FAILED, actual.getStatus());
   }

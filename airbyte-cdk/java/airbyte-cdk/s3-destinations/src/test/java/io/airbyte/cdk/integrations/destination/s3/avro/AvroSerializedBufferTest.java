@@ -88,10 +88,10 @@ public class AvroSerializedBufferTest {
   }
 
   private static void runTest(final BufferStorage buffer,
-                              final Long minExpectedByte,
-                              final Long maxExpectedByte,
-                              final S3AvroFormatConfig config,
-                              final String expectedData)
+      final Long minExpectedByte,
+      final Long maxExpectedByte,
+      final S3AvroFormatConfig config,
+      final String expectedData)
       throws Exception {
     final File outputFile = buffer.getFile();
     try (final AvroSerializedBuffer writer = (AvroSerializedBuffer) AvroSerializedBuffer

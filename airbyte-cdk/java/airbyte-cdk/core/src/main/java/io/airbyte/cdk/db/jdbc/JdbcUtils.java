@@ -24,6 +24,7 @@ import static java.sql.JDBCType.VARCHAR;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Maps;
+import io.airbyte.cdk.integrations.config.AirbyteSourceConfig;
 import io.airbyte.commons.exceptions.ConfigErrorException;
 import java.sql.JDBCType;
 import java.util.HashMap;
@@ -88,6 +89,18 @@ public class JdbcUtils {
   }
 
   public static Map<String, String> parseJdbcParameters(final JsonNode config, final String jdbcUrlParamsKey, final String delimiter) {
+    if (config.has(jdbcUrlParamsKey)) {
+      return parseJdbcParameters(config.get(jdbcUrlParamsKey).asText(), delimiter);
+    } else {
+      return Maps.newHashMap();
+    }
+  }
+
+  public static Map<String, String> parseJdbcParameters(final AirbyteSourceConfig config, final String jdbcUrlParamsKey) {
+    return parseJdbcParameters(config, jdbcUrlParamsKey, "&");
+  }
+
+  public static Map<String, String> parseJdbcParameters(final AirbyteSourceConfig config, final String jdbcUrlParamsKey, final String delimiter) {
     if (config.has(jdbcUrlParamsKey)) {
       return parseJdbcParameters(config.get(jdbcUrlParamsKey).asText(), delimiter);
     } else {
